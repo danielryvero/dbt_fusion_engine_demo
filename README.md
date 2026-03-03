@@ -439,7 +439,7 @@ This command creates a temporary view that selects the newly inserted record int
 </br>
 
 # Code snippets used in Snowflake <a id="snowflake-code-snippets"></a>
-### 9. Record insertion in a Model:<a id="record-insertion-model9"></a>
+### 1. Record insertion in a Model:<a id="record-insertion-model9"></a>
 ```sql
 INSERT INTO EDW_DV_DEMO.RAW_DATAVAULT.HUB_CUSTOMER (
 HUB_ID_CUSTOMER, CUSTOMER_KEY, TENANT, DT_LOAD, RECORD_SOURCE)
@@ -458,7 +458,7 @@ WHERE CUSTOMER_KEY = 150001 --Enter ID inserted above
 ;
 ```
 
-### 10. Record inserted in a Source:<a id="record-insertion-model10"></a>
+### 2. Record inserted in a Source:<a id="record-insertion-model10"></a>
 ```sql
 INSERT INTO EDW_DV_DEMO.LANDING.CUSTOMER (
 C_CUSTKEY, C_NAME, C_ADDRESS, C_NATIONKEY,
@@ -489,7 +489,7 @@ FROM EDW_DV_DEMO.LANDING.CUSTOMER
 WHERE C_CUSTKEY = 150002;
 ```
 
-### 11. Inserting record in a source without <span style="color:#b08968; font-weight:600;">loaded_at_field</span>:<a id="record-insertion-model11"></a>
+### 3. Inserting record in a source without <span style="color:#b08968; font-weight:600;">loaded_at_field</span>:<a id="record-insertion-model11"></a>
 ```sql
 INSERT INTO EDW_DV_DEMO.LANDING.NATION (
     N_NATIONKEY, N_NAME, N_REGIONKEY, N_COMMENT)
@@ -505,7 +505,7 @@ SELECT *
 FROM EDW_DV_DEMO.LANDING.NATION
 WHERE N_NAME = 'CUBA';
 ```
-### 14. Source configuration for <span style="color:#b08968; font-weight:600;">loaded_at_query</span> field:<a id="record-insertion-model14"></a>
+### 4. Source configuration for <span style="color:#b08968; font-weight:600;">loaded_at_query</span> field:<a id="record-insertion-model14"></a>
 ```yml
         config:
           loaded_at_query: |
@@ -513,7 +513,7 @@ WHERE N_NAME = 'CUBA';
             from {{ this }}
             where DT_LOAD >= current_timestamp - interval '5 minutes'
 ```            
-### 15. Inserting record in a different source than the one with the <span style="color:#b08968; font-weight:600;">loaded_at_query</span> field configured:<a id="record-insertion-model15"></a>
+### 5. Inserting record in a different source than the one with the <span style="color:#b08968; font-weight:600;">loaded_at_query</span> field configured:<a id="record-insertion-model15"></a>
 ``` sql
 INSERT INTO EDW_DV_DEMO.LANDING.ORDERS (
 	O_ORDERKEY,	O_CUSTKEY, O_ORDERSTATUS,
