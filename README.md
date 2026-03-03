@@ -1,4 +1,8 @@
-# dbt Cloud Results
+
+# dbt Cloud Demo
+[![hackmd-github-sync-badge](https://hackmd.io/MttD1NxSTY-6U_nAWtCK6w/badge)](https://hackmd.io/MttD1NxSTY-6U_nAWtCK6w)
+
+![dbt_fusion_image](https://hackmd.io/_uploads/HJlu1BVYbl.png)
 
 ## 1. dbt parse & dbt compile
 
