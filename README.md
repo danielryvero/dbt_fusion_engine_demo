@@ -12,6 +12,7 @@
 
 **Branch without Fusion engine →**
 <br />
+<br />  
 **Branch with Fusion engine →**
 </div>
 
@@ -73,7 +74,7 @@ To suppress this warning, set static_analysis to 'unsafe' in the nodes' configur
 </span>
 </div>
 
-The dbt macro “{{ this }}” performs an introspective query, given that it consults the state of a model in the database. Since this operation depends on the result of something and not pure SQL code, the ”unsafe” warning appears. This only means that the models with that macro will be analyzed Just In Time (JIT) instead of Ahead Of Time (AOT). This is the default behavior of static analysis: non-introspective models  depend on AOT rendering and introspective models always use JIT rendering.
+The dbt macro “**{{ this }}**” performs an introspective query, given that it consults the state of a model in the database. Since this operation depends on the result of something and not pure SQL code, the ”unsafe” warning appears. This only means that the models with that macro will be analyzed Just In Time (JIT) instead of Ahead Of Time (AOT). This is the default behavior of static analysis: non-introspective models  depend on AOT rendering and introspective models always use JIT rendering.
 ## 8. Job runs
 
 ### First Job Runs shows the following:
@@ -110,11 +111,14 @@ Following the [Prerequisites](https://www.notion.so/dbt-Cloud-Fusion-2f6a318a617
 ![image 5](https://hackmd.io/_uploads/rymeCRAOZe.png)
 
 ### Record insertion in a Model:
-
 After that run, a record was inserted in one of the models, ```EDW_DV_DEMO.RAW_DATAVAULT.HUB_CUSTOMER``` (this is a model, not a source):
-
 ![image 6](https://hackmd.io/_uploads/Syk7CAR_bl.png)
 
+<a href="#record-insertion-model9"
+   style="background:#2563eb; color:white; padding:1px 12px; 
+   border-radius:6px; text-decoration:none; font-weight:600;">
+   Go to Code Snippet
+</a>
 ### Second Fusion <span style="color:#9d2d1d; font-weight:900;">State-Awared </span> Job run:
 
 A second Run of the same Job was executed to attempt load the new data into the models.
@@ -150,11 +154,19 @@ Selecting the inserted CUSTOMER_KEY from <span style="color:#4ade80; font-weight
 A record was inserted into the Source table (```EDW_DV_DEMO.LANDING.CUSTOMER```) where the  was configured in the <span style="color:#f59e0b; font-weight:600;">source.yml</span>: 
 ![image 10](https://hackmd.io/_uploads/rJGOJyJtbl.png)
 
+<a href="#record-insertion-model10"
+   style="background:#2563eb; color:white; padding:1px 12px; 
+   border-radius:6px; text-decoration:none; font-weight:600;">
+   Go to Code Snippet
+</a>
+
 <div style="display:flex; gap:20px; align-items:flex-start;">
 
 <div style="flex:1;">
 
 The <span style="color:#b08968; font-weight:600;">loaded_at_field</span> was set—as it should be—at the source level, referencing a table field to measure freshness and track when records are inserted into the table. 
+</br>
+</br>
 </br>
 We could have a <span style="color:#b08968; font-weight:600;">loaded_at_query</span> field with custom SQL logic to define a custom freshness condition instead of the <span style="color:#b08968; font-weight:600;">loaded_at_field</span> used this time.  
 </div>
@@ -189,6 +201,11 @@ This is the <span style="color:#f59e0b; font-weight:600;">source.yml</span> file
 Record insertion in source table ```EDW_DV_DEMO.LANDING.NATION```: 
 ![image 15](https://hackmd.io/_uploads/HyOQe1JtWg.png)
 
+<a href="#record-insertion-model11"
+   style="background:#2563eb; color:white; padding:1px 12px; 
+   border-radius:6px; text-decoration:none; font-weight:600;">
+   Go to Code Snippet
+</a>
 ### Job Run after record insertion in source:
 ![image 16](https://hackmd.io/_uploads/HyWExkkYZl.png)
 
@@ -221,10 +238,16 @@ For this configuration to take effect, a commit into the branch must be done, be
 A new record is inserted into the source table ```EDW_DV_DEMO.LANDING.CUSTOMER``` at <span style="color:#fb923c; font-weight:500;">2026-02-23 13:06:35</span>: 
 ![image 17](https://hackmd.io/_uploads/rJFjlkXtZe.png)
 
+<a href="#record-insertion-model9"
+   style="background:#2563eb; color:white; padding:1px 12px; 
+   border-radius:6px; text-decoration:none; font-weight:600;">
+   Go to Code Snippet
+</a>
+
 Job triggering before <span style="color:#b784c7; font-weight:600;">build_after</span> count hits:
 ![chrome_SWGhH8QwHf](https://hackmd.io/_uploads/SydRwZXYWx.gif)
 
-The HUB_CUSTOMER model was not rebuilt. Others were built because they use the very same ```EDW_DV_DEMO.LANDING.CUSTOMER``` table as a source, but the one we configured stated this in the resulting log: 
+The <span style="color:#4ade80; font-weight:600;">HUB_CUSTOMER</span> model was not rebuilt. Others were built because they use the very same ```EDW_DV_DEMO.LANDING.CUSTOMER``` table as a source, but the one we configured stated this in the resulting log: 
 
 ```bash
 12:07:07
@@ -258,18 +281,27 @@ The following configuration has been set for the HUB_CUSTOMER model:
 A record is inserted into the source table ```EDW_DV_DEMO.LANDING.CUSTOMER``` (CUSTOMER_KEY = 150009) at <span style="color:#fb923c; font-weight:500;">2026-02-25 09:34:36</span>: 
 ![image 19](https://hackmd.io/_uploads/S11WZkmKZx.png)
 
+<a href="#record-insertion-model9"
+   style="background:#2563eb; color:white; padding:1px 12px; 
+   border-radius:6px; text-decoration:none; font-weight:600;">
+   Go to Code Snippet
+</a>
 ### Job running after record insertion within interval defined
 
 The <span style="color:#9d2d1d; font-weight:600;">State-Awared </span> Job runs at <span style="color:#fb923c; font-weight:500;">2026-02-25 09:35:55</span>, almost instantly after the record was inserted. All models downstream <span style="color:#4ade80; font-weight:600;">HUB_CUSTOMER</span> (including it) were rebuilt:
 
 ![chrome_kQuDGCGnz9](https://hackmd.io/_uploads/r14f-yXt-e.gif)
 
- 
-
 ### Record insertion outside interval defined by <span style="color:#b08968; font-weight:600;">loaded_at_query</span> parameter
 
 A second record is inserted into ```EDW_DV_DEMO.LANDING.CUSTOMER```  (CUSTOMER_KEY = 150011) at <span style="color:#fb923c; font-weight:500;">2026-02-25 09:59:07</span>:
 ![image 20](https://hackmd.io/_uploads/ryD7b1QtZe.png)
+
+<a href="#record-insertion-model9"
+   style="background:#2563eb; color:white; padding:1px 12px; 
+   border-radius:6px; text-decoration:none; font-weight:600;">
+   Go to Code Snippet
+</a>
 
 ### Job running after record insertion outside interval defined
 
@@ -281,6 +313,12 @@ The <span style="color:#9d2d1d; font-weight:600;">State-Awared </span> Job runs 
 In this example, a record was inserted into the ```EDW_DV_DEMO.LANDING.ORDERS``` (ORDER_KEY = 6000001):
 ![image 21](https://hackmd.io/_uploads/SJES-J7tWx.png)
 
+<a href="#record-insertion-model15"
+   style="background:#2563eb; color:white; padding:1px 12px; 
+   border-radius:6px; text-decoration:none; font-weight:600;">
+   Go to Code Snippet
+</a>
+
 The <span style="color:#9d2d1d; font-weight:600;">State-Awared </span> Job was kicked off immediately afterwards. Models downstream of the ```EDW_DV_DEMO.LANDING.ORDERS``` source table were run, this is not the case of the <span style="color:#4ade80; font-weight:600;">HUB_CUSTOMER</span> model, because the previous inserted record had been inserted more than 5 minutes ago:
 ![chrome_CznTovQ0tl](https://hackmd.io/_uploads/BJZlj-7YZg.gif)
 
@@ -288,7 +326,7 @@ The <span style="color:#9d2d1d; font-weight:600;">State-Awared </span> Job was k
 
 The following analysis comes right after the last Job we kicked, where we had a condition set by a <span style="color:#b08968; font-weight:600;">loaded_at_query</span>  field and we inserted a record into another source that didn’t have a <span style="color:#b08968; font-weight:600;">loaded_at_</span> field.
 
-When kicking off a Job, there are a series of queries we can analyze in the Warehouse used for it. The first one is this, where dbt checks the INFORMATION_SCHEMA and extracts the last_altered tables from TABLES:
+When kicking off a Job, there are a series of queries we can analyze in the Warehouse used for it. The first one is this, where dbt checks the INFORMATION_SCHEMA and extracts the <span style="color:#b08968; font-weight:600;">last_altered</span> tables from TABLES:
 
 ```sql
 SELECT
@@ -349,6 +387,106 @@ WHERE HUB.HUB_ID_ORDERS IS NULL);
 ```
 
 This command creates a temporary view that selects the newly inserted record into the source. There is internal Engine processing based on the <span style="color:#b08968; font-weight:600;">last_altered</span> field queried at the beginning of the Job. This proves the efficiency of dbt when consuming metadata from the queries run against the Warehouse to detect the changes in source tables.
+</br>
+</br>
 
+# Code snippets used in Snowflake
+### 9. Record insertion in a Model:<a id="record-insertion-model9"></a>
+```sql
+INSERT INTO EDW_DV_DEMO.RAW_DATAVAULT.HUB_CUSTOMER (
+HUB_ID_CUSTOMER, CUSTOMER_KEY, TENANT, DT_LOAD, RECORD_SOURCE)
+SELECT
+    MD5(150001), --Choose ID to insert (>150000)
+    150001,      --Chosen ID
+    'SDG_ES_CORE',
+    CAST(CURRENT_TIMESTAMP AS TIMESTAMP_NTZ),
+    'EDW_DV_DEMO.LANDING.CUSTOMER';
+```
+Checking record insertion:
+```sql
+SELECT *
+FROM EDW_DV_DEMO.RAW_DATAVAULT.HUB_CUSTOMER
+WHERE CUSTOMER_KEY = 150001 --Enter ID inserted above
+;
+```
 
-## Code used in Snowflake
+### 10. Record inserted in a Source:<a id="record-insertion-model10"></a>
+```sql
+INSERT INTO EDW_DV_DEMO.LANDING.CUSTOMER (
+C_CUSTKEY, C_NAME, C_ADDRESS, C_NATIONKEY,
+C_PHONE, C_ACCTBAL, C_MKTSEGMENT, C_COMMENT,
+DT_LOAD
+)
+SELECT
+    150002,
+    'Customer#000150002',
+    'DD7m6OBUJqlbTpiYmzK9SYuJBiuasfhius', --Random description
+    21,
+    '20-222-421-2026',                    --Random phone number
+    2222.08,
+    'BUILDING',
+    'manually inserted record for state awareness 2',
+    CAST(CURRENT_TIMESTAMP AS TIMESTAMP_NTZ);
+```
+
+Checking record insertion:
+```sql
+SELECT 
+    DT_LOAD, 
+    C_CUSTKEY, 
+    C_NAME, 
+    C_ADDRESS, 
+    C_PHONE
+FROM EDW_DV_DEMO.LANDING.CUSTOMER 
+WHERE C_CUSTKEY = 150002;
+```
+
+### 11. Inserting record in a source without <span style="color:#b08968; font-weight:600;">loaded_at_field</span>:<a id="record-insertion-model11"></a>
+```sql
+INSERT INTO EDW_DV_DEMO.LANDING.NATION (
+    N_NATIONKEY, N_NAME, N_REGIONKEY, N_COMMENT)
+SELECT 
+    25, 
+    'CUBA', 
+    1, 
+    'test country. bad experiment';
+```
+Check record insertion:
+```sql
+SELECT * 
+FROM EDW_DV_DEMO.LANDING.NATION
+WHERE N_NAME = 'CUBA';
+```
+### 14. Source configuration for <span style="color:#b08968; font-weight:600;">loaded_at_query</span> field:<a id="record-insertion-model14"></a>
+```yml
+        config:
+          loaded_at_query: |
+            select max(DT_LOAD)
+            from {{ this }}
+            where DT_LOAD >= current_timestamp - interval '5 minutes'
+```            
+### 15. Inserting record in a different source than the one with the <span style="color:#b08968; font-weight:600;">loaded_at_query</span> field configured:<a id="record-insertion-model15"></a>
+``` sql
+INSERT INTO EDW_DV_DEMO.LANDING.ORDERS (
+	O_ORDERKEY,	O_CUSTKEY, O_ORDERSTATUS,
+	O_TOTALPRICE, O_ORDERDATE, O_ORDERPRIORITY,
+	O_CLERK, O_SHIPPRIORITY, O_COMMENT
+    )
+SELECT 
+    6000001,
+    104548,
+    'O',
+    2245.29,
+    TO_DATE('31/08/1996', 'DD/MM/YYYY'),
+    '2-HIGH',
+    'Clerk#000000411',
+    0,
+    'comment for extra record inserted in orders 1';
+```
+Checking record insertion:
+```sql
+SELECT *
+FROM EDW_DV_DEMO.LANDING.ORDERS
+WHERE O_ORDERKEY =(
+    SELECT MAX(O_ORDERKEY) FROM EDW_DV_DEMO.LANDING.ORDERS);
+```
