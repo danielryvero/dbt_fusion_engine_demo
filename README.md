@@ -1,7 +1,7 @@
 # dbt Cloud Demo
 
 <p align="center">
-  <img src="./pictures/HJlu1BVYbl.png" width="600"/>
+  <img src="./pictures/fusion_engine_logo.png" width="600"/>
 </p>
 
 This demo explores the key enhancements introduced by the dbt Fusion Engine, with a particular focus on State-Aware Orchestration. Through hands-on examples, it demonstrates how these improvements impact project performance and execution behavior.
@@ -26,18 +26,18 @@ You can find the project used in this demo [here](https://github.com/danielryver
    - [Second SAO job run](#sao-model-second-run) 
    - [Partial conclusions](#model-partial-conclusions)
 10. [State Awareness Orchestration – Source insert](#sao-source-insert)
-   - [Record insertion in a source](#source-record-insert)
-   - [Partial conclusions](#source-partial-conclusions)
+    - [Record insertion in a source](#source-record-insert)
+    - [Partial conclusions](#source-partial-conclusions)
 11. [SAO without loaded_at_field](#sao-no-loaded-at-field)
-   - [Job run after source insert](#job-after-source-insert)
+    - [Job run after source insert](#job-after-source-insert)
 12. [Managing build frequency](#advanced-frequency)
 13. [SAO triggered by code change](#sao-code-change)
-   - [Job after code change](#job-after-code-change)
+    - [Job after code change](#job-after-code-change)
 14. [Using loaded_at_query](#loaded-at-query)
-   - [Insert within interval](#insert-within-interval)
-   - [Job after insert within interval](#job-after-within-interval)
-   - [Insert outside interval](#insert-outside-interval)
-   - [Job after insert outside interval](#job-after-outside-interval)
+    - [Insert within interval](#insert-within-interval)
+    - [Job after insert within interval](#job-after-within-interval)
+    - [Insert outside interval](#insert-outside-interval)
+    - [Job after insert outside interval](#job-after-outside-interval)
 15. [Insert in different source](#insert-different-source)
 16. [How dbt detects inserts](#how-dbt-detects-inserts)
 17. [Snowflake code snippets](#snowflake-code-snippets) 
@@ -56,7 +56,7 @@ You can find the project used in this demo [here](https://github.com/danielryver
 
 <div style="flex:1;">
 
-![image](pictures/BJcZc00dZg.png)
+![image](pictures/compile_parse_comparison.png)
 
 </div>
 
@@ -65,39 +65,39 @@ You can find the project used in this demo [here](https://github.com/danielryver
 At first glance, parsing and compile times in this 41-model Data Vault project show roughly a 1-second difference between the Fusion and Core dbt engines.
 
 ## 2. Broad SQL comprehension and faster parsing <a id="sql-comprehension"></a>
-![chrome_CEOjclPBtp](pictures/rkbYUbXFbg.gif)
+![sql_comprehension](pictures/sql_comprehension.gif)
 Because Fusion engine is a SQL compiler rather than a string processor, it marks SQL errors as soon as you save the model. In the Core version, these errors would only appear during the model run, causing a failed run and wasting warehouse resources.
 
 Notice that warnings and errors appear in the "<span style="color:#2563eb;"><strong>Results</strong></span>" tab almost instantly after saving. The whole project parses much faster than before.
 
 ## 3. <span style="color:#2563eb;"><strong>Preview CTE</strong></span> button <a id="preview-cte"></a>
 
-![chrome_Og3SNX0nAH](pictures/SJ_eoAR_be.gif)
+![preview_cte](pictures/preview_cte.gif)
 This button appears when you save the model. dbt Fusion detects a new CTE and enables the button to quickly retrieve data from the table. It resolves the ***ref*** macro and shows the data without needing to navigate to the referenced model or comment out the rest of the code.
 
 Note that each time you click the button, a query runs against the warehouse, consuming credits. We recommend using this feature in development with a dedicated, cost-effective warehouse to facilitate optimization.
 
 These are the queries that run in the warehouse when you click the "<span style="color:#2563eb;"><strong>Preview CTE</strong></span>" button:
-![image 1](pictures/SkZsi0Cu-g.png)
+![image 1](pictures/query_history_preview_cte.png)
 Clicking the button again to review results—even after a short period—restarts the warehouse, so no Persisted Query result from the Snowflake metadata layer is used even if the data hasn't changed. This happens because dbt's observability framework tracks every operation at the metadata level and inserts an auditable record in ```"YOUR_DB_NAME"."OBSERVABILITY"."DBT_INVOCATIONS"```. 
 
 ## 4. Column lineage and references to it <a id="column-lineage"></a>
 
-![chrome_DywN9SouVq](pictures/ryOVjARdWe.gif)
+![column_lineage](pictures/column_lineage.gif)
 When you hover over a column, dbt shows its origin and data type. Right-click and select "<span style="color:#2563eb;"><strong>Go to References</strong></span>" to see which models use this column. In this case, it appears in the model initially selected in the lineage and its downstream model.
 
 Fusion retrieves this information from the warehouse's information schema, caches it, and reuses it without querying the warehouse again (on Snowflake).
 
 ## 5. Suggestions <a id="suggestions"></a>
 
-![chrome_vUaK6MXgMl](pictures/HkoMnARdbl.gif)
+![suggestions](pictures/suggestions.gif)
 When writing column names in a CTE, dbt Fusion knows which columns you can include. If you write a column name that's not in that model's columns, it underlines it in red and shows the available columns to choose from. 
 
 When you hover over the invalid column name, dbt displays possible replacements.
 
 ## 6. “<span style="color:#2563eb;"><strong>Go to Definition</strong></span>” button <a id="go-to-definition"></a>
 
-![chrome_ezsE63vOoS](pictures/HJZS3RCdWx.gif)
+![go_to_definition](pictures/go_to_definition.gif)
 Right-click on a column name and select "<span style="color:#2563eb;"><strong>Go to Definition</strong></span>" to jump directly to the CTE where that column originates. Hovering over the "*" in a ```SELECT *``` statement reveals which columns come from that CTE. 
 
 ## 7. Static analysis in work <a id="static-analysis"></a>
@@ -120,14 +120,14 @@ The dbt macro “**{{ this }}**” performs an introspective query, given that i
 
                 Fusion Engine Job                            Core Engine Job
 
-![image 2](pictures/ryRWT0CdWl.png)
+![image 2](pictures/fusion_vs_standard_job.png)
 
               Time elapsed: 2m, 1s                            Time elapsed: 3m, 22s
 
 As shown in the screenshot, a standard job was run in each environment. With identical configuration, the dbt Fusion Engine completed in 2 minutes 1 second versus 3 minutes 22 seconds for the Core Engine run. Note that <span style="color:#9d2d1d; font-weight:600;">state-aware orchestration </span> is not enabled—this will be analyzed later. 
 
 After a first run, a record is inserted in a source table:
-![image 3](pictures/rJ3OpR0_-e.png)
+![image 3](pictures/record_insertion_1.png)
 
 <a href="#record-insertion-model10"
    style="background:#2563eb; color:white; padding:1px 12px; 
@@ -139,7 +139,7 @@ After a first run, a record is inserted in a source table:
 
                 Fusion Engine Job                            Core Engine Job
 
-![image 4](pictures/S1PipACdZx.png)
+![image 4](pictures/fusion_vs_standard_job_2.png)
 
             Time elapsed: 2m, 32s                              Time elapsed: 3m, 33s
 
@@ -151,11 +151,11 @@ Following the [Prerequisites](https://docs.getdbt.com/docs/deploy/state-aware-se
 
 ### First Fusion <span style="color:#9d2d1d; font-weight:900;">State-Awared </span> Job run: <a id="sao-model-first-run"></a>
 
-![image 5](pictures/rymeCRAOZe.png)
+![image 5](pictures/sao_model_first_run.png)
 
 ### Record insertion in a Model: <a id="model-record-insert"></a>
 After that run, a record was inserted in one of the models, ```EDW_DV_DEMO.RAW_DATAVAULT.HUB_CUSTOMER``` (this is a model, not a source):
-![image 6](pictures/Syk7CAR_bl.png)
+![image 6](pictures/record_insertion_2.png)
 
 <a href="#record-insertion-model9"
    style="background:#2563eb; color:white; padding:1px 12px; 
@@ -169,11 +169,11 @@ A second Run of the same Job was executed to attempt load the new data into the 
 
           First Fusion Engine Job                       After-insertion Fusion Engine Job
 
-![image 7](pictures/HJnHA0A_Wx.png)
+![image 7](pictures/fusion_job_comparison.png)
 
 
 Job logs show that no models were built:
-![chrome_wzMAIgRTrQ](pictures/rkm_C0ROWe.gif)
+![no_models_built](pictures/no_models_built.gif)
 
 When no models are built, the model run time is just 38 seconds for this project. 
 
@@ -181,7 +181,7 @@ Model timing for both Jobs:
 
         First Fusion Engine Job                         After-insertion Fusion Engine Job
 
-![image 8](pictures/ryYoC0AObg.png)
+![image 8](pictures/fusion_job_comparison_2.png)
 
 
 ### Partial Conclusions <a id="model-partial-conclusions"></a>
@@ -189,14 +189,14 @@ Model timing for both Jobs:
 These results were unexpected—the job didn't rebuild all models downstream of <span style="color:#4ade80; font-weight:600;">HUB_CUSTOMER</span>. This happens because <span style="color:#9d2d1d; font-weight:600;">state-awareness </span> checks the source tables to identify new changes, so data must be inserted there for this feature to work. 
 
 Selecting the inserted CUSTOMER_KEY from <span style="color:#4ade80; font-weight:600;">CUSTOMER_BAL</span> reveals that the record doesn't appear in the table. This confirms that models downstream of <span style="color:#4ade80; font-weight:600;">HUB_CUSTOMER</span> weren't rebuilt—the record didn't make it to <span style="color:#4ade80; font-weight:600;">CUSTOMER_BAL</span>.
-![image 9](pictures/H1SS1JJtbl.png)
+![image 9](pictures/record_check.png)
 
 ## 10. State Awareness Orchestration (SAO) enabled (Record inserted in Source) <a id="sao-source-insert"></a>
 
 ### Record insertion in a Source <a id="source-record-insert"></a>
 
 A record was inserted into the Source table (```EDW_DV_DEMO.LANDING.CUSTOMER```) where the  was configured in the <span style="color:#f59e0b; font-weight:600;">source.yml</span>: 
-![image 10](pictures/rJGOJyJtbl.png)
+![image 10](pictures/record_insertion_source.png)
 
 <a href="#record-insertion-model10"
    style="background:#2563eb; color:white; padding:1px 12px; 
@@ -217,20 +217,20 @@ We could have a <span style="color:#b08968; font-weight:600;">loaded_at_query</s
 
 <div style="flex:1;">
 
-![image 11](pictures/B1XJlk1tWl.png)
+![image 11](pictures/loaded_at_field.png)
 
 </div>
 
 </div>
 
 After this, the Job ran differently:
-![chrome_fHckZmAR8C](pictures/HJl031kyFZg.gif)
+![fusion_job_comparison_3](pictures/fusion_job_comparison_3.gif)
 
 Models that were run match the list of downstream models from source ```SF_SAMPLE.CUSTOMER``` in the lineage image below:
-![image 12](pictures/B1YexJyYWx.png)
+![image 12](pictures/models_run_lineage.png)
 
 In the following image, we can see the first record we inserted (into <span style="color:#4ade80; font-weight:600;">HUB_CUSTOMER</span>) and the second record we inserted (into ```SF_SAMPLE.CUSTOMER```), note that CUSTOMER_KEY has the values 30007, 150002 and 150003:
-![image 13](pictures/rJmWlJktbe.png)
+![image 13](pictures/record_check_2.png)
 
 ### Partial Conclusions <a id="source-partial-conclusions"></a>
 
@@ -240,10 +240,10 @@ In this example, no freshness criteria (this will be addressed later on) were de
 ## 11. <span style="color:#9d2d1d; font-weight:600;">State-Awareness </span> testing in source without <span style="color:#b08968; font-weight:900;">loaded_at_field</span> configured in <span style="color:#f59e0b; font-weight:600;">source.yml</span> <a id="sao-no-loaded-at-field"></a>
 
 This is the <span style="color:#f59e0b; font-weight:600;">source.yml</span> file for the ```EDW_DV_DEMO.LANDING.NATION``` table. This table doesn’t have a timestamp field and therefore it doesn’t have the <span style="color:#b08968; font-weight:600;">loaded_at_field</span> configured. 
-![image 14](pictures/SkUGe1kK-g.png)
+![image 14](pictures/no_loaded_at_field.png)
 
 Record insertion in source table ```EDW_DV_DEMO.LANDING.NATION```: 
-![image 15](pictures/HyOQe1JtWg.png)
+![image 15](pictures/record_insertion_3.png)
 
 <a href="#record-insertion-model11"
    style="background:#2563eb; color:white; padding:1px 12px; 
@@ -252,7 +252,7 @@ Record insertion in source table ```EDW_DV_DEMO.LANDING.NATION```:
 </a>
 
 ### Job Run after record insertion in source: <a id="job-after-source-insert"></a>
-![image 16](pictures/HyWExkkYZl.png)
+![image 16](pictures/job_after_source_insert.png)
 
 The record insertion was detected and only the downstream models of that source were run. This happens because <span style="color:#9d2d1d; font-weight:600;">state-aware orchestration </span> uses shared state tracking to determine which models need to be built by detecting changes in code or data every time a job runs. It works out-of-the-box (natively), with an optional configuration setting for more advanced controls, that were not set for this source table.
 
@@ -281,7 +281,7 @@ Notice the freshness configuration for the model. The build_after parameter was 
 For this configuration to take effect, a commit into the branch must be done, because the <span style="color:#9d2d1d; font-weight:600;">state-aware orchestration </span> works in a STG environment that is running off a custom branch, so changes must be reflected in that branch for the Job to recognize the config, otherwise it will assume the default config and rebuild the model.
 
 A new record is inserted into the source table ```EDW_DV_DEMO.LANDING.CUSTOMER``` at <span style="color:#fb923c; font-weight:500;">2026-02-23 13:06:35</span>: 
-![image 17](pictures/rJFjlkXtZe.png)
+![image 17](pictures/record_insertion_4.png)
 
 <a href="#record-insertion-model9"
    style="background:#2563eb; color:white; padding:1px 12px; 
@@ -290,7 +290,7 @@ A new record is inserted into the source table ```EDW_DV_DEMO.LANDING.CUSTOMER``
 </a>
 
 Job triggering before <span style="color:#b784c7; font-weight:600;">build_after</span> count hits:
-![chrome_SWGhH8QwHf](pictures/SydRwZXYWx.gif)
+![fusion_job_comparison_4](pictures/fusion_job_comparison_4.gif)
 
 The <span style="color:#4ade80; font-weight:600;">HUB_CUSTOMER</span> model was not rebuilt. Others were built because they use the very same ```EDW_DV_DEMO.LANDING.CUSTOMER``` table as a source, but the one we configured stated this in the resulting log: 
 
@@ -307,24 +307,24 @@ This proves the serverity of the <span style="color:#b784c7; font-weight:600;">b
 ## 13. Checking that <span style="color:#9d2d1d; font-weight:900;">State-Awareness </span> is also triggered by a code change in a model. <a id="sao-code-change"></a>
 
 The following demonstration includes adding code to the existing model <span style="color:#4ade80; font-weight:600;">CUSTOMER_BAL</span> and committing the changes into the STG branch, where a <span style="color:#9d2d1d; font-weight:600;">State-Awared </span> job has been set.
-![chrome_D10YHyZh0l](pictures/BJV19-7tWx.gif)
+![chrome_D10YHyZh0l](pictures/change_model_code.gif)
 
 
 ### <span style="color:#9d2d1d; font-weight:900;">State-Awared </span> Job triggering after code change: <a id="job-after-code-change"></a>
 
-![chrome_FhBJbrj0yE](pictures/H1JJ-kXFbl.gif)
+![job_after_code_change](pictures/job_after_code_change.gif)
 
 The only model that was built was in fact <span style="color:#4ade80; font-weight:600;">CUSTOMER_BAL</span> and the dependencies downstream of it (tests and on-run hooks). This occurs because the <span style="color:#9d2d1d; font-weight:600;">State-Awareness </span> runs if there is new data in the source and time constraints for model building comply or if there is a code change in any of the models, indicating a change in the compiled code of the model.
 
 ## 14. Using <span style="color:#b08968; font-weight:900;">loaded_at_query</span> instead of <span style="color:#b08968; font-weight:900;">loaded_at_field</span> <a id="loaded-at-query"></a>
 
 The following configuration has been set for the HUB_CUSTOMER model:
-![image 18](pictures/S1llbJmKbx.png)
+![image 18](pictures/loaded_at_query.png)
 
 ### Record insertion within interval defined by <span style="color:#b08968; font-weight:600;">loaded_at_query</span> parameter <a id="insert-within-interval"></a>
 
 A record is inserted into the source table ```EDW_DV_DEMO.LANDING.CUSTOMER``` (CUSTOMER_KEY = 150009) at <span style="color:#fb923c; font-weight:500;">2026-02-25 09:34:36</span>: 
-![image 19](pictures/S11WZkmKZx.png)
+![image 19](pictures/record_insertion_5.png)
 
 <a href="#record-insertion-model9"
    style="background:#2563eb; color:white; padding:1px 12px; 
@@ -336,12 +336,12 @@ A record is inserted into the source table ```EDW_DV_DEMO.LANDING.CUSTOMER``` (C
 
 The <span style="color:#9d2d1d; font-weight:600;">State-Awared </span> Job runs at <span style="color:#fb923c; font-weight:500;">2026-02-25 09:35:55</span>, almost instantly after the record was inserted. All models downstream <span style="color:#4ade80; font-weight:600;">HUB_CUSTOMER</span> (including it) were rebuilt:
 
-![chrome_kQuDGCGnz9](pictures/r14f-yXt-e.gif)
+![fusion_job_comparison_5](pictures/fusion_job_comparison_5.gif)
 
 ### Record insertion outside interval defined by <span style="color:#b08968; font-weight:600;">loaded_at_query</span> parameter <a id="insert-outside-interval"></a>
 
 A second record is inserted into ```EDW_DV_DEMO.LANDING.CUSTOMER```  (CUSTOMER_KEY = 150011) at <span style="color:#fb923c; font-weight:500;">2026-02-25 09:59:07</span>:
-![image 20](pictures/ryD7b1QtZe.png)
+![image 20](pictures/record_insertion_6.png)
 
 <a href="#record-insertion-model9"
    style="background:#2563eb; color:white; padding:1px 12px; 
@@ -352,12 +352,12 @@ A second record is inserted into ```EDW_DV_DEMO.LANDING.CUSTOMER```  (CUSTOMER_K
 ### Job running after record insertion outside interval defined <a id="job-after-outside-interval"></a>
 
 The <span style="color:#9d2d1d; font-weight:600;">State-Awared </span> Job runs at <span style="color:#fb923c; font-weight:500;">2026-02-25 10:22:04</span>, about 23 minutes after the record was inserted. No models were built because no new changes were detected. This happened because of the <span style="color:#b08968; font-weight:600;">loaded_at_query</span> field limitting the checked data to be only of the last 5 minutes:
-![chrome_agXCrUuWUN](pictures/BkuVbkQKbl.gif)
+![fusion_job_comparison_6](pictures/fusion_job_comparison_6.gif)
 
 ## 15. Inserting a record in a different source than the one with the <span style="color:#b08968; font-weight:600;">loaded_at_query</span> field configured <a id="insert-different-source"></a>
 
 In this example, a record was inserted into the ```EDW_DV_DEMO.LANDING.ORDERS``` (ORDER_KEY = 6000001):
-![image 21](pictures/SJES-J7tWx.png)
+![image 21](pictures/record_insertion_7.png)
 
 <a href="#record-insertion-model15"
    style="background:#2563eb; color:white; padding:1px 12px; 
@@ -366,7 +366,7 @@ In this example, a record was inserted into the ```EDW_DV_DEMO.LANDING.ORDERS```
 </a>
 
 The <span style="color:#9d2d1d; font-weight:600;">State-Awared </span> Job was kicked off immediately afterwards. Models downstream of the ```EDW_DV_DEMO.LANDING.ORDERS``` source table were run, this is not the case of the <span style="color:#4ade80; font-weight:600;">HUB_CUSTOMER</span> model, because the previous inserted record had been inserted more than 5 minutes ago:
-![chrome_CznTovQ0tl](pictures/BJZlj-7YZg.gif)
+![fusion_job_comparison_7](pictures/fusion_job_comparison_7.gif)
 
 ## 16. How does dbt detect insertion of records into tables? <a id="how-dbt-detects-inserts"></a>
 
@@ -404,7 +404,7 @@ convert_timezone('UTC', current_timestamp()) as snapshotted_at
 ```
 
 Then it executes a ```DESCRIBE TABLE``` for each of the tables in the project, to update the metadata it has about them: 
-![image 22](pictures/BJPjfZQFbe.png)
+![image 22](pictures/query_history_dbt.png)
 
 After using ```DESCRIBE TABLE``` and ```SHOW OBJECTS IN SCHEMA``` commands, the first command used to indeed select records that will be used downstream is this:
 
