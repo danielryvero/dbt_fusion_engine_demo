@@ -4,7 +4,7 @@
   <img src="./pictures/fusion_engine_logo.png" width="600"/>
 </p>
 
-This demo explores the key enhancements introduced by the dbt Fusion Engine, with a particular focus on State-Aware Orchestration. Through hands-on examples, it demonstrates how these improvements impact project performance and execution behavior.
+This demo explores the key enhancements introduced by the dbt Fusion Engine in the dbt interface (formerly dbt Cloud), with a particular focus on State-Aware Orchestration. Through hands-on examples, it demonstrates how these improvements impact project performance and execution behavior.
 
 You can find the project used in this demo [here](https://github.com/danielryvero/dbt-datavault-demo) to follow along and evaluate the benefits of the Fusion Engine firsthand.  
 
