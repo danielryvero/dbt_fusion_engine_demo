@@ -6,9 +6,9 @@
   <img src="https://hackmd.io/_uploads/HJlu1BVYbl.png" width="600"/>
 </p>
 
-This demo explores the key enhancements introduced by the dbt Fusion Engine, with a particular focus on State-Aware Orchestration. Through hands-on examples, it demonstrates how these improvements impact project performance and execution behavior.
+This demo explores the key enhancements introduced by the dbt Fusion Engine in the dbt interface (formerly dbt Cloud), with a particular focus on State-Aware Orchestration. Through hands-on examples, it demonstrates how these improvements impact project performance and execution behavior.
 
-You can find the project used in this demo [here] to follow along and evaluate the benefits of the Fusion Engine firsthand.  
+You can find the project used in this demo [here](https://github.com/danielryvero/dbt-datavault-demo) to follow along and evaluate the benefits of the Fusion Engine firsthand.  
 
 ## Table of Contents
 
@@ -28,41 +28,27 @@ You can find the project used in this demo [here] to follow along and evaluate t
    - [Second SAO job run](#sao-model-second-run) 
    - [Partial conclusions](#model-partial-conclusions)
 10. [State Awareness Orchestration – Source insert](#sao-source-insert)
-   - [Record insertion in a source](#source-record-insert)
-   - [Partial conclusions](#source-partial-conclusions)
+    - [Record insertion in a source](#source-record-insert)
+    - [Source Configuration](#source-configuration)
+    - [Partial conclusions](#source-partial-conclusions)
 11. [SAO without loaded_at_field](#sao-no-loaded-at-field)
-   - [Job run after source insert](#job-after-source-insert)
+    - [Job run after source insert](#job-after-source-insert)
 12. [Managing build frequency](#advanced-frequency)
 13. [SAO triggered by code change](#sao-code-change)
-   - [Job after code change](#job-after-code-change)
+    - [Job after code change](#job-after-code-change)
 14. [Using loaded_at_query](#loaded-at-query)
-   - [Insert within interval](#insert-within-interval)
-   - [Job after insert within interval](#job-after-within-interval)
-   - [Insert outside interval](#insert-outside-interval)
-   - [Job after insert outside interval](#job-after-outside-interval)
+    - [Insert within interval](#insert-within-interval)
+    - [Job after insert within interval](#job-after-within-interval)
+    - [Insert outside interval](#insert-outside-interval)
+    - [Job after insert outside interval](#job-after-outside-interval)
 15. [Insert in different source](#insert-different-source)
 16. [How dbt detects inserts](#how-dbt-detects-inserts)
 17. [Snowflake code snippets](#snowflake-code-snippets) 
 
 ## 1. dbt parse & dbt compile <a id="parse-compile"></a>
 
-<div style="display:flex; gap:20px; align-items:flex-start;">
+![compile_parse_comparison](https://hackmd.io/_uploads/SJRDN0Gobe.png)
 
-<div style="flex:1;">
-
-**Branch without Fusion engine →**
-<br />
-<br />  
-**Branch with Fusion engine →**
-</div>
-
-<div style="flex:1;">
-
-![image](https://hackmd.io/_uploads/BJcZc00dZg.png)
-
-</div>
-
-</div>
 
 At first glance, parsing and compile times in this 41-model Data Vault project show roughly a 1-second difference between the Fusion and Core dbt engines.
 
@@ -77,7 +63,7 @@ Notice that warnings and errors appear in the "<span style="color:#2563eb;"><str
 ![chrome_Og3SNX0nAH](https://hackmd.io/_uploads/SJ_eoAR_be.gif)
 This button appears when you save the model. dbt Fusion detects a new CTE and enables the button to quickly retrieve data from the table. It resolves the ***ref*** macro and shows the data without needing to navigate to the referenced model or comment out the rest of the code.
 
-Note that each time you click the button, a query runs against the warehouse, consuming credits. We recommend using this feature in development with a dedicated, cost-effective warehouse to facilitate optimization.
+> Note that each time you click the button, a query runs against the warehouse, consuming credits. We recommend using this feature in development with a dedicated, cost-effective warehouse to facilitate optimization.
 
 These are the queries that run in the warehouse when you click the "<span style="color:#2563eb;"><strong>Preview CTE</strong></span>" button:
 ![image 1](https://hackmd.io/_uploads/SkZsi0Cu-g.png)
@@ -88,14 +74,14 @@ Clicking the button again to review results—even after a short period—restar
 ![chrome_DywN9SouVq](https://hackmd.io/_uploads/ryOVjARdWe.gif)
 When you hover over a column, dbt shows its origin and data type. Right-click and select "<span style="color:#2563eb;"><strong>Go to References</strong></span>" to see which models use this column. In this case, it appears in the model initially selected in the lineage and its downstream model.
 
-Fusion retrieves this information from the warehouse's information schema, caches it, and reuses it without querying the warehouse again (on Snowflake).
+> Fusion retrieves this information from the warehouse's information schema, caches it, and reuses it without querying the warehouse again (on Snowflake).
 
 ## 5. Suggestions <a id="suggestions"></a>
 
 ![chrome_vUaK6MXgMl](https://hackmd.io/_uploads/HkoMnARdbl.gif)
 When writing column names in a CTE, dbt Fusion knows which columns you can include. If you write a column name that's not in that model's columns, it underlines it in red and shows the available columns to choose from. 
 
-When you hover over the invalid column name, dbt displays possible replacements.
+> When you hover over the invalid column name, dbt displays possible replacements.
 
 ## 6. “<span style="color:#2563eb;"><strong>Go to Definition</strong></span>” button <a id="go-to-definition"></a>
 
@@ -177,7 +163,7 @@ A second Run of the same Job was executed to attempt load the new data into the 
 Job logs show that no models were built:
 ![chrome_wzMAIgRTrQ](https://hackmd.io/_uploads/rkm_C0ROWe.gif)
 
-When no models are built, the model run time is just 38 seconds for this project. 
+> When no models are built, the model run time is just 38 seconds for this project. 
 
 Model timing for both Jobs:
 
@@ -197,7 +183,7 @@ Selecting the inserted CUSTOMER_KEY from <span style="color:#4ade80; font-weight
 
 ### Record insertion in a Source <a id="source-record-insert"></a>
 
-A record was inserted into the Source table (```EDW_DV_DEMO.LANDING.CUSTOMER```) where the  was configured in the <span style="color:#f59e0b; font-weight:600;">source.yml</span>: 
+A record was inserted into the Source table (```EDW_DV_DEMO.LANDING.CUSTOMER```) where the <span style="color:#b08968; font-weight:600;">loaded_at_field</span> was configured in the <span style="color:#f59e0b; font-weight:600;">source.yml</span>: 
 ![image 10](https://hackmd.io/_uploads/rJGOJyJtbl.png)
 
 <a href="#record-insertion-model10"
@@ -205,6 +191,8 @@ A record was inserted into the Source table (```EDW_DV_DEMO.LANDING.CUSTOMER```)
    border-radius:6px; text-decoration:none; font-weight:600;">
    Go to Code Snippet
 </a>
+
+### Source Configuration <a id="source-configuration"></a>
 
 <div style="display:flex; gap:20px; align-items:flex-start;">
 
@@ -280,7 +268,7 @@ models:
 
 Notice the freshness configuration for the model. The build_after parameter was set to <span style="color:#b784c7; font-weight:600;">count: 1</span>, <span style="color:#b784c7; font-weight:600;">period: hour</span> and <span style="color:#b784c7; font-weight:600;">updates_on: any</span>. This means that this model will only be built if it has new data in any of its upstream models (in this case, the only upstream model is the source) or has a code change and it was not built in the last hour.
 
-For this configuration to take effect, a commit into the branch must be done, because the <span style="color:#9d2d1d; font-weight:600;">state-aware orchestration </span> works in a STG environment that is running off a custom branch, so changes must be reflected in that branch for the Job to recognize the config, otherwise it will assume the default config and rebuild the model.
+> For this configuration to take effect, a commit into the branch must be done, because the <span style="color:#9d2d1d; font-weight:600;">state-aware orchestration </span> works in a STG environment that is running off a custom branch, so changes must be reflected in that branch for the Job to recognize the config, otherwise it will assume the default config and rebuild the model.
 
 A new record is inserted into the source table ```EDW_DV_DEMO.LANDING.CUSTOMER``` at <span style="color:#fb923c; font-weight:500;">2026-02-23 13:06:35</span>: 
 ![image 17](https://hackmd.io/_uploads/rJFjlkXtZe.png)
