@@ -94,12 +94,12 @@ Due to the[`static_analysis`](https://docs.getdbt.com/reference/resource-configs
 ```
 dbt1000: Detected unsafe introspection which may lead to non-deterministic static analysis. 
 To suppress this warning, set static_analysis to 'unsafe' in the nodes' configuration. Learn more:
-https://docs.getdbt.com/docs/_**Fusion**_/new-concepts. Nodes:
+https://docs.getdbt.com/docs/fusion/new-concepts. Nodes:
 'model.demo_dv.HUB_CUSTOMER' (this),
 'model.demo_dv.HUB_NATION' (this),
 'model.demo_dv.HUB_ORDERS' (this),
 'model.demo_dv.HUB_PART' (this),
- 'model.demo_dv.HUB_REGION' (this),
+'model.demo_dv.HUB_REGION' (this),
 'model.demo_dv.HUB_SUPPLIER' (this),
 'model.demo_dv.LNK_CUSTOMER_NATION' (this),
 'model.demo_dv.LNK_LINEITEM_ORDERS_PART_SUPPLIER' (this),
