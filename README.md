@@ -45,9 +45,9 @@ You can find the project used in this demo [here](https://github.com/danielryver
 
 ## 1. dbt parse & dbt compile <a id="parse-compile"></a>
 
-
-![image](pictures/compile_parse_comparison.png)
-
+<p align="center">
+  <img src="./pictures/compile_parse_comparison.png" width="500"/>
+</p>
 
 At first glance, parsing and compile times in this 41-model Data Vault project show roughly a 1-second difference between the _**Fusion**_ and Core dbt engines.
 
@@ -172,7 +172,7 @@ A second Run of the same Job was executed to attempt load the new data into the 
 Job logs show that no models were built:
 ![no_models_built](pictures/no_models_built.gif)
 
-When no models are built, the model run time is just 38 seconds for this project. 
+> When no models are built, the model run time is just 38 seconds for this project. 
 
 Model timing for both Jobs:
 
